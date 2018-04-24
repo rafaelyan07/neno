@@ -5,19 +5,16 @@
  */
 package br.com.infox.telas;
 
-
-
 /**
  *
  * @author admin
  */
-
 import java.sql.*;
 import br.com.infox.dal.ModuloConexao;
 import javax.swing.JOptionPane;
 
 public class TelaUsuario extends javax.swing.JInternalFrame {
-    
+
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
@@ -26,35 +23,62 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         initComponents();
         conexao = ModuloConexao.conector();
     }
-    private void consultar(){
+
+    private void consultar() {
         String sql = "select * from tbusuarios where iduser=?";
         try {
-            pst=conexao.prepareStatement(sql);
-            pst.setString(1,txtUsuId.getText());
-            rs=pst.executeQuery();
-            if(rs.next()){
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtUsuId.getText());
+            rs = pst.executeQuery();
+            if (rs.next()) {
                 txtUsuNome.setText(rs.getString(2));
                 txtUsuFone.setText(rs.getString(3));
                 txtUsuLogin.setText(rs.getString(4));
                 txtUsuSenha.setText(rs.getString(5));
                 cboUsuPerfil.setSelectedItem(rs.getString(6));
-            
-            }else{
-                
+
+            } else {
+
                 JOptionPane.showMessageDialog(null, "Usuário não encontrado");
                 txtUsuNome.setText(null);
                 txtUsuFone.setText(null);
                 txtUsuLogin.setText(null);
                 txtUsuSenha.setText(null);
-            
-            
+
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
-            
+
         }
-    
+
     }
+
+    private void adicionar() {
+
+        String sql = "insert into tbusuarios(iduser,usuario,fone,login,senha,perfil) values (?,?,?,?,?,?)";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtUsuId.getText());
+            pst.setString(2, txtUsuNome.getText());
+            pst.setString(3, txtUsuFone.getText());
+            pst.setString(4, txtUsuLogin.getText());
+            pst.setString(5, txtUsuSenha.getText());
+            pst.setString(6, cboUsuPerfil.getSelectedItem().toString());
+            int adicionado = pst.executeUpdate();
+            if (adicionado > 0) {
+                JOptionPane.showMessageDialog(null, "Usuario adicionado com sucesso");
+                txtUsuNome.setText(null);
+                txtUsuFone.setText(null);
+                txtUsuLogin.setText(null);
+                txtUsuSenha.setText(null);
+                cboUsuPerfil.setSelectedItem(null);
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -116,6 +140,11 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         btnUsoCreate.setToolTipText("Adicionar");
         btnUsoCreate.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnUsoCreate.setPreferredSize(new java.awt.Dimension(80, 80));
+        btnUsoCreate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUsoCreateActionPerformed(evt);
+            }
+        });
 
         btnUsuDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/icones/delete.png"))); // NOI18N
         btnUsuDelete.setToolTipText("Deletar");
@@ -226,6 +255,10 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         // chamando o metodo consultar
         consultar();
     }//GEN-LAST:event_btnUsuReadActionPerformed
+
+    private void btnUsoCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUsoCreateActionPerformed
+        adicionar();
+    }//GEN-LAST:event_btnUsoCreateActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
